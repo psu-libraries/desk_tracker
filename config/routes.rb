@@ -1,4 +1,14 @@
 Rails.application.routes.draw do
+
+
+  ActiveAdmin.routes(self)
+  
+  # TODO: This should be changed to a good active admin page
+  root to: 'admin/dashboard#index'
+  
+  devise_for :users
+  
+  post 'interactions/import' => 'interactions#import'
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
