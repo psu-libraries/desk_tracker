@@ -1,0 +1,6 @@
+
+<%= form_tag import_admin_interactions_path, multipart: true do |f|%>
+    <%= file_field_tag :file %>
+	<br/><br/>
+    <%= submit_tag "Import CSV" %>
+<% end %>
