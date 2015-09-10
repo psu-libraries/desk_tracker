@@ -1,0 +1,12 @@
+<% context.instance_eval do
+	panel 'Patron Count Time Series By Branch' do
+		@arbre_context.assigns[:branches].each do |branch|
+			panel branch.branch do
+				div id: "time-series=#{branch.branch}" do
+					text_node "doing stuff"
+			    end
+			end
+		end
+	end
+
+end %>

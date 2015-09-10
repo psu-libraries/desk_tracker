@@ -1,4 +1,5 @@
 class InteractionsController < ApplicationController
-  def import
+  def patron_count_timeseries
+    Interaction.patron_count_timeseries
   end
 end

@@ -1,3 +1,5 @@
+require 'api_constraints'
+
 Rails.application.routes.draw do
 
 
@@ -9,6 +11,12 @@ Rails.application.routes.draw do
   devise_for :users
   
   post 'interactions/import' => 'interactions#import'
+  
+  namespace :api, constraints: { format: 'json' } do
+    scope module: :v1, constraints: ApiConstraints.new(version: 1, default: true) do
+      get 'interactions/patron_counts_timeseries', to: 'interactions#patron_count_timeseries'
+    end
+  end
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
