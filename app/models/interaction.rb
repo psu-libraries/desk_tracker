@@ -33,17 +33,20 @@ class Interaction < ActiveRecord::Base
       group(:branch).
       average('cast(optional_text as float)')
       dates = (results.keys.first.first..results.keys.last.first)
-      data = {xData: [], datasets: []}
-      
-      dates.each do |date|
-        data[:xData] << date
-      end
+      data = {datasets: []}
       
       branches.each do |branch|
-        dataset = {name: branch, data: [], type: 'line', valueDecimals: 2}
+        dataset = {unit: 'Patrons', name: branch, data: [], type: 'line', valueDecimals: 2}
         dates.each do |date| 
-          dataset[:data] << (results[[date, branch]].nil? ? 0 : results[[date, branch]])
+          value = (results[[date, branch]].nil? ? 0 : results[[date, branch]]).to_f
+          if value > 300
+            counts = Interaction.where(page: 'Patron Count', branch: branch, count_date: date).collect { |i| i.optional_text.to_f }.delete_if { |x| x > 300 }
+            logger.info "out of bounds value for #{branch} on #{date}: #{counts}".colorize(:red)
+            value = counts.inject{|sum,x| sum + x } / counts.size.to_f
+          end
+          dataset[:data] << value
         end
+        dataset[:start_date] = [dates.first.year, dates.first.month, dates.first.day]
         data[:datasets] << dataset
       end
       
