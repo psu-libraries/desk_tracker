@@ -8,10 +8,24 @@ ActiveAdmin.register Interaction do
   
   collection_action :import, method: [:post] do
     
-    Interaction.import(params[:file])
+    # name = params[:upload][:file].original_filename
+ #        directory = "public/images/upload"
+ #        path = File.join(directory, name)
+ #        File.open(path, "wb") { |f| f.write(params[:upload][:file].read) }
+ #        flash[:notice] = "File uploaded"
+ #        redirect_to "/upload/new"
+ 
+ 
+    directory = 'public/data_files'
+    path = File.join(directory, params[:file].original_filename)
+    File.open(path, 'wb') { |f| f.write(params[:file].read) }
     
-    flash.alert = 'Your file has been uploaded and processed.'
-    redirect_to request.referer
+    import = CSVImport.create(file_name: path)
+    
+    Delayed::Job.enqueue(ImportCSVJob.new(import.id), queue: 'import_csv')
+    
+    flash.alert = 'Your file has been uploaded and is being processed.'
+    redirect_to admin_interactions_path
   end
 
 # See permitted parameters documentation:
