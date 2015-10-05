@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150923132141) do
+ActiveRecord::Schema.define(version: 20151005155131) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -31,36 +31,26 @@ ActiveRecord::Schema.define(version: 20150923132141) do
   add_index "active_admin_comments", ["namespace"], name: "index_active_admin_comments_on_namespace", using: :btree
   add_index "active_admin_comments", ["resource_type", "resource_id"], name: "index_active_admin_comments_on_resource_type_and_resource_id", using: :btree
 
-  create_table "csv_imports", force: :cascade do |t|
-    t.string   "file_name",                  null: false
-    t.integer  "file_size"
-    t.integer  "row_count"
-    t.datetime "created_at",                 null: false
-    t.datetime "updated_at",                 null: false
-    t.integer  "progress",       default: 0
-    t.string   "status"
-    t.datetime "time_completed"
-  end
-
-  add_index "csv_imports", ["file_name"], name: "index_csv_imports_on_file_name", using: :btree
-  add_index "csv_imports", ["status"], name: "index_csv_imports_on_status", using: :btree
-
   create_table "delayed_jobs", force: :cascade do |t|
-    t.integer  "priority",   default: 0, null: false
-    t.integer  "attempts",   default: 0, null: false
-    t.text     "handler",                null: false
+    t.integer  "priority",               default: 0, null: false
+    t.integer  "attempts",               default: 0, null: false
+    t.text     "handler",                            null: false
     t.text     "last_error"
     t.datetime "run_at"
     t.datetime "locked_at"
     t.datetime "failed_at"
     t.string   "locked_by"
     t.string   "queue"
+    t.integer  "delayed_reference_id"
+    t.string   "delayed_reference_type"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
+  add_index "delayed_jobs", ["delayed_reference_id"], name: "delayed_jobs_delayed_reference_id", using: :btree
+  add_index "delayed_jobs", ["delayed_reference_type"], name: "delayed_jobs_delayed_reference_type", using: :btree
   add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority", using: :btree
-  add_index "delayed_jobs", ["queue"], name: "index_delayed_jobs_on_queue", using: :btree
+  add_index "delayed_jobs", ["queue"], name: "delayed_jobs_queue", using: :btree
 
   create_table "interactions", force: :cascade do |t|
     t.integer  "response_set"
