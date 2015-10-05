@@ -1,7 +1,13 @@
 class ImportCSVJob < Struct.new(:import_id)
-    def enqueue(job)
-      job.delayed_reference_id   = import_id
-      job.delayed_reference_type = 'CSVImport'
-      job.save!
-    end
+  
+  def perform()
+    import = CSVImport.find self.resource_id
+    import.import
+  end    
+
+  def enqueue(job)
+    job.resource_id   = import_id
+    job.resource_class = 'CSVImport'
+    job.save!
   end
+end

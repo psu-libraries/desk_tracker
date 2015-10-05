@@ -10,10 +10,10 @@ class CSVImport < ActiveRecord::Base
     
     rows = 0
     
-    CSV.foreach(file, encoding: 'ISO-8859-1', headers: true) do |row|
+    CSV.foreach(self.file_name, encoding: 'ISO-8859-1', headers: true) do |row|
       logger.info row.to_s.colorize(:green)
       row_data = row.to_hash
-      row_data['count_date'] = row_data['date_time'].to_date
+      row_data['count_date'] = Chronic.parse(row_data['date_time'])
       interaction = Interaction.where(response_id: row_data['response_id'])
       
       begin 

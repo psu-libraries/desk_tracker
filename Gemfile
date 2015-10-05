@@ -79,6 +79,7 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin]
 
 gem 'delayed_job_active_record'
 
+gem 'chronic'
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development

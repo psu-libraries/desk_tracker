@@ -32,12 +32,12 @@ ActiveRecord::Schema.define(version: 20150923132141) do
   add_index "active_admin_comments", ["resource_type", "resource_id"], name: "index_active_admin_comments_on_resource_type_and_resource_id", using: :btree
 
   create_table "csv_imports", force: :cascade do |t|
-    t.string   "file_name",      null: false
+    t.string   "file_name",                  null: false
     t.integer  "file_size"
     t.integer  "row_count"
-    t.datetime "created_at",     null: false
-    t.datetime "updated_at",     null: false
-    t.integer  "progress"
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
+    t.integer  "progress",       default: 0
     t.string   "status"
     t.datetime "time_completed"
   end
@@ -46,9 +46,9 @@ ActiveRecord::Schema.define(version: 20150923132141) do
   add_index "csv_imports", ["status"], name: "index_csv_imports_on_status", using: :btree
 
   create_table "delayed_jobs", force: :cascade do |t|
-    t.integer  "priority",       default: 0, null: false
-    t.integer  "attempts",       default: 0, null: false
-    t.text     "handler",                    null: false
+    t.integer  "priority",   default: 0, null: false
+    t.integer  "attempts",   default: 0, null: false
+    t.text     "handler",                null: false
     t.text     "last_error"
     t.datetime "run_at"
     t.datetime "locked_at"
@@ -57,15 +57,10 @@ ActiveRecord::Schema.define(version: 20150923132141) do
     t.string   "queue"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "resource_id"
-    t.string   "resource_class"
-    t.string   "resource_data"
   end
 
   add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority", using: :btree
   add_index "delayed_jobs", ["queue"], name: "index_delayed_jobs_on_queue", using: :btree
-  add_index "delayed_jobs", ["resource_class"], name: "index_delayed_jobs_on_resource_class", using: :btree
-  add_index "delayed_jobs", ["resource_id"], name: "index_delayed_jobs_on_resource_id", using: :btree
 
   create_table "interactions", force: :cascade do |t|
     t.integer  "response_set"
