@@ -92,6 +92,7 @@ GEM
       execjs
     coffee-script-source (1.9.1.1)
     colorize (0.7.7)
+    daemons (1.2.3)
     database_cleaner (1.4.1)
     debug_inspector (0.0.2)
     delayed_job (4.0.6)
@@ -99,6 +100,10 @@ GEM
     delayed_job_active_record (4.0.3)
       activerecord (>= 3.0, < 5.0)
       delayed_job (>= 3.0, < 4.1)
+    delayed_job_web (1.2.10)
+      activerecord (> 3.0.0)
+      delayed_job (> 2.0.3)
+      sinatra (>= 1.4.4)
     devise (3.5.2)
       bcrypt (~> 3.0)
       orm_adapter (~> 0.1)
@@ -330,8 +335,10 @@ DEPENDENCIES
   chronic
   coffee-rails (~> 4.1.0)
   colorize
+  daemons
   database_cleaner
   delayed_job_active_record
+  delayed_job_web
   devise
   draper
   factory_girl_rails

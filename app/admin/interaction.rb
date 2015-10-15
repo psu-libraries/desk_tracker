@@ -22,7 +22,7 @@ ActiveAdmin.register Interaction do
     
     import = CSVImport.create(file_name: path)
     
-    Delayed::Job.enqueue(ImportCSVJob.new(import.id), queue: 'import_csv')
+    import.delay(queue: 'csv_imports').import
     
     flash.alert = 'Your file has been uploaded and is being processed.'
     redirect_to admin_interactions_path

@@ -17,6 +17,9 @@ Rails.application.routes.draw do
       get 'interactions/patron_counts_timeseries', to: 'interactions#patron_count_timeseries'
     end
   end
+  
+  mount DelayedJobWeb => "/delayed_job"
+  
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

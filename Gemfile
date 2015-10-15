@@ -78,6 +78,8 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin]
 
 
 gem 'delayed_job_active_record'
+gem "delayed_job_web"
+gem 'daemons'
 
 gem 'chronic'
 
