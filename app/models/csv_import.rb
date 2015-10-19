@@ -1,6 +1,6 @@
 class CSVImport < ActiveRecord::Base
-  after_validation :get_filesize
-  after_validation :get_row_count
+  # after_validation :get_filesize
+ #  after_validation :get_row_count
   
   validates_presence_of :file_name
   
@@ -29,10 +29,10 @@ class CSVImport < ActiveRecord::Base
       
       rows += 1
       
-      if rows % 10 == 0
-        self.progress = ((rows/self.row_count.to_f)*100).round
-        self.save
-      end
+      # if rows % 10 == 0
+#         self.progress = ((rows/self.row_count.to_f)*100).round
+#         self.save
+#       end
     end
     
     self.stage = 'complete'
