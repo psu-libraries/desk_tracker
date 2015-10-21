@@ -15,16 +15,12 @@ class CSVImport < ActiveRecord::Base
       logger.info row.to_s.colorize(:green)
       row_data = row.to_hash
       row_data['count_date'] = Chronic.parse(row_data['date_time'])
+      row_data['optional_text'] = 0 unless 
       interaction = Interaction.where(response_id: row_data['response_id'])
       
-      begin 
-        if interaction.size == 0
-          Interaction.create!(row_data)
-        else
-          interaction.first.update_attributes(row_data)
-        end
-      rescue
-        flash.alert "Failed to create or update response id: #{row_data['response_id']} - #{row}"
+      if(row_data['page'] == 'Patron Count' and is_number?(row_data['optional_text']))
+      
+        
       end
       
       rows += 1
@@ -52,4 +48,7 @@ class CSVImport < ActiveRecord::Base
     self.row_count = CSV.read(self.file_name, encoding: 'ISO-8859-1', headers: true).size if self.file_name
   end
   
+  def is_number? string
+    return true if Float(string) rescue false
+  end
 end

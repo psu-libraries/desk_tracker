@@ -1,5 +1,9 @@
 ActiveAdmin.register_page "Patron Counts" do
   content do
+    
+    within @head do
+          script :src => javascript_path('patron_counts.js'), :type => "text/javascript"
+       end
     if @arbre_context.assigns[:branches] && !@arbre_context.assigns[:branches].empty?
       render 'admin/data/patron_count_charts', context: self, locals: {opts: @arbre_context.assigns[:opts]}
     else
