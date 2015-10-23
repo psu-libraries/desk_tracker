@@ -18,16 +18,6 @@ RSpec.describe CSVImport, type: :model do
     it 'should have default progress of 0' do
       expect(import.progress).to eq 0
     end
-  
-    it 'should cmopute the file size' do
-      import.save
-      expect(import.file_size).to eq File.size(filename)
-    end
-    
-    it 'should compute the number of rows' do
-      import.save
-      expect(import.row_count).to eq CSV.read(filename, encoding: 'ISO-8859-1', headers: true).size
-    end
     
     it 'should have default stage of \'initialized\'' do
       expect(import.stage).to eq 'initialized'
@@ -39,7 +29,7 @@ RSpec.describe CSVImport, type: :model do
     before(:each) { import.save }
     
     it 'should add the rows to the database' do
-      expect{ import.import }.to change(Interaction, :count).by import.row_count
+      expect{ import.import }.to change(Interaction, :count).by 1352
     end
     
     describe 'progress tracking during import' do
