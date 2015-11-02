@@ -42,10 +42,14 @@ class CSVImport < ActiveRecord::Base
   private
   
   def valid_row? row_data
-    if row_data['page'] == 'Patron Count'
-      return false if row_data['optional_text'].nil? || row_data['optional_text'].empty?
-      return false unless is_numeric? row_data['optional_text']
-      return false if Integer(row_data['optional_text']) > 300
+    begin
+      if row_data['page'] == 'Patron Count'
+        return false if row_data['optional_text'].nil? || row_data['optional_text'].empty?
+        return false unless is_numeric? row_data['optional_text']
+        return false if Integer(row_data['optional_text']) > 300
+      end
+    rescue
+      return false
     end
     true
   end

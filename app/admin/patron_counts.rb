@@ -24,7 +24,7 @@ ActiveAdmin.register_page "Patron Counts" do
   
   controller do
     def index
-      interactions = Interaction.where(page: 'Patron Count').select('date_time, question, response, optional_text, user, branch, desk, library')
+      # interactions = Interaction.where(page: 'Patron Count').select('date_time, question, response, optional_text, user, branch, desk, library')
       opts = {select: %w[date_time question response optional_text user branch desk library]}
       @branches = Interaction.branches(opts)
     end

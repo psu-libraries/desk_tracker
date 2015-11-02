@@ -1,3 +1,13 @@
+var $loading = $('#loading').hide();
+jQuery.ajaxSetup({
+    beforeSend:function(){
+        jQuery("#loading").show();
+    },
+    complete:function(){
+        jQuery("#loading").hide();
+    }
+});
+
 $(function () {
     
 

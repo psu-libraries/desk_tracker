@@ -31,13 +31,6 @@ ActiveRecord::Schema.define(version: 20151022192624) do
   add_index "active_admin_comments", ["namespace"], name: "index_active_admin_comments_on_namespace", using: :btree
   add_index "active_admin_comments", ["resource_type", "resource_id"], name: "index_active_admin_comments_on_resource_type_and_resource_id", using: :btree
 
-  create_table "csv_files", force: :cascade do |t|
-    t.string   "file_name"
-    t.datetime "created_at",    null: false
-    t.datetime "updated_at",    null: false
-    t.integer  "csv_upload_id"
-  end
-
   create_table "csv_imports", force: :cascade do |t|
     t.integer  "file_size"
     t.integer  "row_count"
@@ -47,11 +40,6 @@ ActiveRecord::Schema.define(version: 20151022192624) do
     t.datetime "updated_at",                           null: false
     t.string   "stage",        default: "initialized"
     t.string   "csv_file_uid"
-  end
-
-  create_table "csv_uploads", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "delayed_jobs", force: :cascade do |t|
