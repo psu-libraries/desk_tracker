@@ -2,9 +2,32 @@ ActiveAdmin.register Interaction do
   
   require 'csv'
   
+  index do |interaction|
+    id_column
+    column :branch
+    column :desk
+    column :page
+    column :question
+    column :response
+    column :optional_text
+    column :user
+    column :count_date
+    actions
+  end
+  
+  filter :branch, as: :check_boxes, collection: proc { Interaction.select('branch').distinct.collect { |b| b.branch} }
+  filter :desk
+  filter :count_date
+  filter :page, as: :check_boxes, collection: proc { Interaction.select('page').distinct.collect { |b| b.page} }
+  filter :question
+  filter :user
+  
+  
+  
   sidebar 'Import Data', priority: 0 do
     render 'admin/import_form'
   end
+
   
   collection_action :import, method: [:post] do
     

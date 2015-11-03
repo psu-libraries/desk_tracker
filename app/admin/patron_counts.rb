@@ -3,7 +3,7 @@ ActiveAdmin.register_page "Patron Counts" do
     render 'admin/data/patron_count_charts', context: self, locals: {opts: @arbre_context.assigns[:opts]}
   end #content
   
-  sidebar :filter_data, partial: 'admin/data/patron_count_filter', context: self
+  sidebar :filters, partial: 'admin/data/patron_count_filter', context: self
   
   controller do
     def index

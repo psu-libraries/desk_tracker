@@ -11,6 +11,7 @@ class Interaction < ActiveRecord::Base
     logger.info "opts #{opts}".colorize(:red)
     results = Interaction.where(page: 'Patron Count').
       where("optional_text <> ''").
+      where(count_date: (opts['start_date']..opts['end_date'])).
       select('max(id)').
       order('count_date asc').
       group(:count_date).

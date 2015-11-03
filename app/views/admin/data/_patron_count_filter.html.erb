@@ -1,21 +1,38 @@
 
 <div id='patron_count_filter' class='panel_contents'>
-	<%= form_tag request.path, method: :get do %>
-	
-	    <h4>Filter By Branch</h4>
-	    <% @branches.each do |branch| %>
-		    <% check = false %>
-			<% check = params[:branches].include?(branch) if params[:branches] && !params[:branches].empty? %>
-		    <%= label_tag "branches_#{branch.downcase}" do %>
-			    <%= check_box_tag "branches[]", branch, check, {id: "branches_#{branch.downcase}"} %>
-				<%= " - #{truncate(branch, length: 32, separator: ' ')}".html_safe %>
-			<% end %>
-		<% end %>
+	<%= form_tag request.path, method: :get, class: 'filter_form' do %>
+	    
+		<div class='filter_form_field filter_check_boxes'>
+			<fieldset class="choices">	    
+				<legend class='label'>
+					<label>Branch</label>
+				</legend>
 		
-		<br/>
-		<br/>
-		<hr/>
-	    <%= submit_tag 'Apply Filters' %>
-		<%= link_to 'Clear Filters', request.path %>
+			    <% @branches.each do |branch| %>
+				    <% check = false %>
+					<% check = params[:branches].include?(branch) if params[:branches] && !params[:branches].empty? %>
+					    <%= label_tag "branches_#{branch.downcase}" do %>
+						    <%= check_box_tag "branches[]", branch, check, {id: "branches_#{branch.downcase}"} %>
+							<%= " - #{truncate(branch, length: 32, separator: ' ')}".html_safe %>
+						<% end %>
+				<% end %>
+			</fieldset>
+		</div>
+		
+		<div class='filter_form_field filter_date_range'>
+			<label class='label'>Date Recorded</label>
+		    <% start_date = params[:start_date].nil? ? Interaction.order('count_date asc').first.count_date.strftime('%d-%m-%Y') : params[:start_date] %>
+		    <%= text_field_tag 'start_date', params[:start_date], value: start_date, class: 'datepicker hasDatePicker', size: 12, maxlength: 10 %>
+			
+			<span class='seperator'>-</span>
+			
+			<% end_date = params[:end_date].nil? ? Date.today.strftime('%d-%m-%Y') : params[:end_date] %>
+		    <%= text_field_tag 'end_date', params[:end_date], value: end_date, class: 'datepicker hasDatePicker', size: 12, maxlength: 10 %>
+		</div>
+			
+		<div class='buttons'>
+		    <%= submit_tag 'Filter' %>
+			<%= link_to 'Clear Filters', request.path, class: 'clear_filters_btn' %>
+	    </div>
 	<% end %>
 </div>
