@@ -50,7 +50,7 @@ $(function () {
         });
     }
 
-    $.getJSON('/api/interactions/patron_counts_timeseries', function (activity) {
+    $.getJSON("/api/interactions/patron_counts_timeseries", $('#ajax_data').data('ajax'), function (activity) {
         $.each(activity.datasets, function (i, dataset) {
 
             // // Add X values

@@ -1,5 +1,6 @@
 <% context.instance_eval do
 	panel 'Patron Count Time Series By Branch' do
+		div id: 'ajax_data', 'data-ajax' => opts.to_json
 		div id: 'loading' do
 			img id: "ajaxSpinnerImage", src: image_url("ajax-loader.gif"), title: "working", class: 'centered'
 		end

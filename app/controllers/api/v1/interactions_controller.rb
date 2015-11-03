@@ -7,7 +7,8 @@ class Api::V1::InteractionsController < ApplicationController
   skip_before_action :authenticate_user!
 
   def patron_count_timeseries
-    render json: Interaction.mean_count_timeseries
+    logger.info "params #{params}".colorize(:green)
+    render json: Interaction.mean_count_timeseries(params)
   end
   
 end

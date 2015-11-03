@@ -1,0 +1,21 @@
+
+<div id='patron_count_filter' class='panel_contents'>
+	<%= form_tag request.path, method: :get do %>
+	
+	    <h4>Filter By Branch</h4>
+	    <% @branches.each do |branch| %>
+		    <% check = false %>
+			<% check = params[:branches].include?(branch) if params[:branches] && !params[:branches].empty? %>
+		    <%= label_tag "branches_#{branch.downcase}" do %>
+			    <%= check_box_tag "branches[]", branch, check, {id: "branches_#{branch.downcase}"} %>
+				<%= " - #{truncate(branch, length: 32, separator: ' ')}".html_safe %>
+			<% end %>
+		<% end %>
+		
+		<br/>
+		<br/>
+		<hr/>
+	    <%= submit_tag 'Apply Filters' %>
+		<%= link_to 'Clear Filters', request.path %>
+	<% end %>
+</div>
