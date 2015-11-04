@@ -196,6 +196,8 @@ ActiveAdmin.setup do |config|
     config.register_javascript 'highcharts.js'
     config.register_javascript 'highcharts/modules/heatmap.js'
     config.register_javascript 'highcharts/highcharts-more.js'
+    config.register_javascript 'highcharts/modules/exporting.js'
+    
     config.register_javascript 'patron_counts.js'
 
   # == CSV options

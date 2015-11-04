@@ -65,9 +65,10 @@ $(function () {
                         marginLeft: 40, // Keep all charts left aligned
                         spacingTop: 20,
                         spacingBottom: 20,
-                        zoomType: 'x',
+                        // zoomType: 'x',
                         // pinchType: null // Disable zoom on touch devices
                     },
+					credits: false,
                     title: {
                         text: dataset.name,
                         align: 'left',
@@ -78,7 +79,7 @@ $(function () {
                         enabled: false
                     },
                     legend: {
-                        enabled: false
+                        enabled: true
                     },
                     xAxis: {
                         crosshair: true,
@@ -93,12 +94,27 @@ $(function () {
                         }
                     },
                     tooltip: {
-                        positioner: function () {
-                            return {
-                                x: this.chart.chartWidth - this.label.width, // right aligned
-                                y: -1 // align to title
-                            };
-                        },
+                        // positioner: function () {
+//                             return {
+//                                 x: this.chart.chartWidth - this.label.width, // right aligned
+//                                 y: +1 // align to title
+//                             };
+//                         },
+
+						positioner: function (labelWidth, labelHeight, point) {
+							var tooltipX, tooltipY;
+						    if (point.plotX + this.chart.plotLeft < labelWidth && point.plotY + labelHeight > this.chart.plotHeight) {
+						        tooltipX = this.chart.plotLeft;
+						        tooltipY = this.chart.plotTop + this.chart.plotHeight - 2 * labelHeight - 10;
+						    } else {
+						        tooltipX = this.chart.plotLeft;
+						        tooltipY = this.chart.plotTop + this.chart.plotHeight - labelHeight;
+						    }
+						    return {
+						        x: tooltipX,
+						        y: tooltipY
+						    }
+						},
                         borderWidth: 0,
                         backgroundColor: 'none',
                         pointFormat: '{point.y}',
@@ -113,15 +129,33 @@ $(function () {
 						pointInterval: 24 * 3600 * 1000,
 						pointStart: Date.UTC(dataset.start_date[0], dataset.start_date[1], dataset.start_date[2]),
                         data: dataset.data,
-                        name: dataset.name,
+                        // name: dataset.name,
+						name: 'Mean Patron Count',
                         type: dataset.type,
 						unit: 'Patrons',
-                        color: Highcharts.getOptions().colors[i],
+						color: dataset.color,
                         fillOpacity: 0.3,
                         tooltip: {
                             valueSuffix: ' ' + dataset.unit
                         }
-                    }]
+                    },
+					{
+						pointInterval: 24 * 3600 * 1000,
+						pointStart: Date.UTC(dataset.start_date[0], dataset.start_date[1], dataset.start_date[2]),
+                        data: dataset.maxdata,
+                        // name: dataset.name,
+						name: 'Maximum Patron Count',
+                        type: 'scatter',
+						unit: 'Patrons',
+						color: dataset.color,
+						marker: {
+							symbol: 'circle',
+							radius: 2,
+						},
+                        tooltip: {
+                            valueSuffix: ' ' + dataset.unit
+                        }
+					}]
                 });
         });
     });

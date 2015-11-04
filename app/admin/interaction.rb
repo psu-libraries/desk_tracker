@@ -21,8 +21,7 @@ ActiveAdmin.register Interaction do
   filter :page, as: :check_boxes, collection: proc { Interaction.select('page').distinct.collect { |b| b.page} }
   filter :question
   filter :user
-  
-  
+ 
   
   sidebar 'Import Data', priority: 0 do
     render 'admin/import_form'
