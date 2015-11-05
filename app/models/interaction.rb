@@ -94,7 +94,7 @@ class Interaction < ActiveRecord::Base
     
     year_keys = mean_results.keys.collect { |k| k.first }
       
-    data = {years:  (year_keys.min..year_keys.max).to_a, datasets: []}
+    data = {years:  (year_keys.min..year_keys.max).to_a, start: year_keys.min, datasets: []}
     
     opts['branches'].each do |branch|
       dataset = {unit: 'Patrons', color: "##{SecureRandom.hex(3)}", name: branch, mean_data: [], max_data: [], type: 'line', valueDecimals: 2}

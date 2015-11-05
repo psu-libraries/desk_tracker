@@ -2,22 +2,7 @@
 <div id='patron_count_filter' class='panel_contents'>
 	<%= form_tag request.path, method: :get, class: 'filter_form' do %>
 	    
-		<div class='filter_form_field filter_check_boxes'>
-			<fieldset class="choices">	    
-				<legend class='label'>
-					<label>Branch</label>
-				</legend>
-		
-			    <% @branches.each do |branch| %>
-				    <% check = false %>
-					<% check = params[:branches].include?(branch) if params[:branches] && !params[:branches].empty? %>
-					    <%= label_tag "branches_#{branch.downcase}" do %>
-						    <%= check_box_tag "branches[]", branch, check, {id: "branches_#{branch.downcase}"} %>
-							<%= " - #{truncate(branch, length: 32, separator: ' ')}".html_safe %>
-						<% end %>
-				<% end %>
-			</fieldset>
-		</div>
+		<%= render 'admin/data/filters/branch_filter', locals: {branches: @branches, params: params} %>
 		
 		<div class='filter_form_field filter_date_range'>
 			<label class='label'>Date Recorded</label>

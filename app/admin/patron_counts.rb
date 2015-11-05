@@ -1,6 +1,13 @@
-ActiveAdmin.register_page "Full Time Series" do
+ActiveAdmin.register_page "Time Series" do
+  
+  menu priority: 1
+  
   menu parent: 'Patron Counts'
+  
   content do
+    within @head do
+          script :src => javascript_path('patron_counts.js'), :type => "text/javascript"
+    end
     render 'admin/data/patron_count_charts', context: self, locals: {opts: @arbre_context.assigns[:opts]}
   end #content
   
