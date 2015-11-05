@@ -9,46 +9,46 @@ jQuery.ajaxSetup({
 });
 
 $(function () {
-    
-
-    /**
-     * In order to synchronize tooltips and crosshairs, override the 
-     * built-in events with handlers defined on the parent element.
-     */
-    $('#time-series').bind('mousemove touchmove', function (e) {
-        var chart,
-            point,
-            i;
-
-        for (i = 0; i < Highcharts.charts.length; i++) {
-            chart = Highcharts.charts[i];
-            e = chart.pointer.normalize(e); // Find coordinates within the chart
-            point = chart.series[0].searchPoint(e, true); // Get the hovered point
-
-            if (point) {
-                point.onMouseOver(); // Show the hover marker
-                chart.tooltip.refresh(point); // Show the tooltip
-                chart.xAxis[0].drawCrosshair(e, point); // Show the crosshair
-            }
-        }
-    });
-   
-    Highcharts.Pointer.prototype.reset = function () {};
-
-    /**
-     * Synchronize zooming through the setExtremes event handler.
-     */
-    function syncExtremes(e) {
-        var thisChart = this.chart;
-
-        Highcharts.each(Highcharts.charts, function (chart) {
-            if (chart !== thisChart) {
-                if (chart.xAxis[0].setExtremes) { // It is null while updating
-                    chart.xAxis[0].setExtremes(e.min, e.max);
-                }
-            }
-        });
-    }
+//
+//
+//     /**
+//      * In order to synchronize tooltips and crosshairs, override the
+//      * built-in events with handlers defined on the parent element.
+//      */
+//     $('#time-series').bind('mousemove touchmove', function (e) {
+//         var chart,
+//             point,
+//             i;
+//
+//         for (i = 0; i < Highcharts.charts.length; i++) {
+//             chart = Highcharts.charts[i];
+//             e = chart.pointer.normalize(e); // Find coordinates within the chart
+//             point = chart.series[0].searchPoint(e, true); // Get the hovered point
+//
+//             if (point) {
+//                 point.onMouseOver(); // Show the hover marker
+//                 chart.tooltip.refresh(point); // Show the tooltip
+//                 chart.xAxis[0].drawCrosshair(e, point); // Show the crosshair
+//             }
+//         }
+//     });
+//
+//     Highcharts.Pointer.prototype.reset = function () {};
+//
+//     /**
+//      * Synchronize zooming through the setExtremes event handler.
+//      */
+//     function syncExtremes(e) {
+//         var thisChart = this.chart;
+//
+//         Highcharts.each(Highcharts.charts, function (chart) {
+//             if (chart !== thisChart) {
+//                 if (chart.xAxis[0].setExtremes) { // It is null while updating
+//                     chart.xAxis[0].setExtremes(e.min, e.max);
+//                 }
+//             }
+//         });
+//     }
 
     $.getJSON("/api/interactions/patron_counts_timeseries", $('#ajax_data').data('ajax'), function (activity) {
         $.each(activity.datasets, function (i, dataset) {
@@ -82,10 +82,10 @@ $(function () {
                         enabled: true
                     },
                     xAxis: {
-                        crosshair: true,
-                        events: {
-                            setExtremes: syncExtremes
-                        },
+                        // crosshair: true,
+ //                        events: {
+ //                            setExtremes: syncExtremes
+ //                        },
 						type: 'datetime',
                     },
                     yAxis: {
@@ -101,36 +101,37 @@ $(function () {
 //                             };
 //                         },
 
-						positioner: function (labelWidth, labelHeight, point) {
-							var tooltipX, tooltipY;
-						    if (point.plotX + this.chart.plotLeft < labelWidth && point.plotY + labelHeight > this.chart.plotHeight) {
-						        tooltipX = this.chart.plotLeft;
-						        tooltipY = this.chart.plotTop + this.chart.plotHeight - 2 * labelHeight - 10;
-						    } else {
-						        tooltipX = this.chart.plotLeft;
-						        tooltipY = this.chart.plotTop + this.chart.plotHeight - labelHeight;
-						    }
-						    return {
-						        x: tooltipX,
-						        y: tooltipY
-						    }
-						},
-                        borderWidth: 0,
-                        backgroundColor: 'none',
-                        pointFormat: '{point.y}',
-                        headerFormat: '',
-                        shadow: false,
-                        style: {
-                            fontSize: '18px'
-                        },
-                        valueDecimals: dataset.valueDecimals
+						// positioner: function (labelWidth, labelHeight, point) {
+// 							var tooltipX, tooltipY;
+// 						    if (point.plotX + this.chart.plotLeft < labelWidth && point.plotY + labelHeight > this.chart.plotHeight) {
+// 						        tooltipX = this.chart.plotLeft;
+// 						        tooltipY = this.chart.plotTop + this.chart.plotHeight - 2 * labelHeight - 10;
+// 						    } else {
+// 						        tooltipX = this.chart.plotLeft;
+// 						        tooltipY = this.chart.plotTop + this.chart.plotHeight - labelHeight;
+// 						    }
+// 						    return {
+// 						        x: tooltipX,
+// 						        y: tooltipY
+// 						    }
+// 						},
+						shared: true
+                        // borderWidth: 0,
+ //                        backgroundColor: 'none',
+ //                        pointFormat: '{point.y}',
+ //                        headerFormat: '',
+ //                        shadow: false,
+ //                        style: {
+ //                            fontSize: '18px'
+ //                        },
+ //                        valueDecimals: dataset.valueDecimals
                     },
                     series: [{
 						pointInterval: 24 * 3600 * 1000,
 						pointStart: Date.UTC(dataset.start_date[0], dataset.start_date[1], dataset.start_date[2]),
                         data: dataset.data,
                         // name: dataset.name,
-						name: 'Mean Patron Count',
+						name: 'Mean',
                         type: dataset.type,
 						unit: 'Patrons',
 						color: dataset.color,
@@ -144,17 +145,29 @@ $(function () {
 						pointStart: Date.UTC(dataset.start_date[0], dataset.start_date[1], dataset.start_date[2]),
                         data: dataset.maxdata,
                         // name: dataset.name,
-						name: 'Maximum Patron Count',
-                        type: 'scatter',
+						name: 'Maximum ',
+                        type: 'line',
 						unit: 'Patrons',
 						color: dataset.color,
+                		lineWidth : 0,
 						marker: {
+							enabled: true,
 							symbol: 'circle',
 							radius: 2,
 						},
                         tooltip: {
                             valueSuffix: ' ' + dataset.unit
-                        }
+                        },
+						states: {
+							hover: {
+								enabled: true,
+								lineWidth: 0,
+								marker: {
+									lineWidth: 0,
+									radius: 3
+								}
+							}
+						}
 					}]
                 });
         });

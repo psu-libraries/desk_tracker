@@ -14,7 +14,14 @@ class CSVImport < ActiveRecord::Base
       row_data = row.to_hash
       
       if valid_row? row_data
-        row_data['count_date'] = Chronic.parse(row_data['date_time'])
+        parsed_date = Chronic.parse(row_data['date_time'])
+        row_data['count_date'] = parsed_date
+        row_data['month'] = parsed_date.month
+        row_data['year'] = parsed_date.year
+        row_data['day_of_week'] = parsed_date.wday
+        row_data['day_of_month'] = parsed_date.mday
+        row_data['day_of_year'] = parsed_date.yday
+        row_data['hour_of_day'] = parsed_date.hour
         interaction = Interaction.where(response_id: row_data['response_id'])
         begin 
           if interaction.size == 0
@@ -23,7 +30,7 @@ class CSVImport < ActiveRecord::Base
             interaction.first.update_attributes(row_data)
           end
         rescue
-          flash.alert "Failed to create or update response id: #{row_data['response_id']} - #{row}"
+          logger.info "Failed to create or update response id: #{row_data['response_id']} - #{row}"
         end
       end
       

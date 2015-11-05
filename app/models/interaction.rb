@@ -1,15 +1,35 @@
 class Interaction < ActiveRecord::Base
-
-  def self.branches(opts={})
-    Interaction.select(:branch).distinct
+  
+  def year
+    return self.count_date.strftime('%Y')
   end
   
-  def self.mean_count_timeseries(opts = {})
+  
+  def month
+    return self.count_date.strftime('%b')
+  end
+  
+  ##
+  # Returns a hash providing data for the patron timecount time series with each branch as a separate time series, 
+  # mean patron counts and max patron count for each day are given.
+  #
+  # @param [Hash] opts the options for creating the charts
+  # @option opts [Array[<String>] :branches A list of branches to include in the data 
+  # @option opts [Date] :start_date The start date for the time series
+  # @option opts [Date] :end_date The end date for the time series
+  def self.patron_count_timeseries(opts = {})
     
+    # Get the branches that will be itereated over
     branches = Interaction.where(page: 'Patron Count').select(:branch).distinct.collect { |b| b.branch }
-    opts = {'branches'=> branches}.merge(opts)
-    logger.info "opts #{opts}".colorize(:red)
-    results = Interaction.where(page: 'Patron Count').
+  
+    opts = {
+      'branches'=> branches, 
+      'start_date' => Interaction.order('count_date asc').first.count_date,
+      'end_date' => DateTime.now
+    }.merge(opts).with_indifferent_access
+    
+    # Query for the average patron counts
+    mean_results  = Interaction.where(page: 'Patron Count').
       where("optional_text <> ''").
       where(count_date: (opts['start_date']..opts['end_date'])).
       select('max(id)').
@@ -17,9 +37,9 @@ class Interaction < ActiveRecord::Base
       group(:count_date).
       group(:branch).
       average('cast(optional_text as float)')
-      
-
-    max_results = Interaction.where(page: 'Patron Count').
+    
+    # Query to get the max patron counts
+    max_results  = Interaction.where(page: 'Patron Count').
       where("optional_text <> ''").
       where(count_date: (opts['start_date']..opts['end_date'])).
       select('max(id), max(cast(optional_text as float))').
@@ -28,14 +48,16 @@ class Interaction < ActiveRecord::Base
       group(:branch).
       maximum('cast(optional_text as integer)')
       
-    dates = (results.keys.first.first..results.keys.last.first)
+    dates = (mean_results .keys.first.first..mean_results .keys.last.first)
     data = {datasets: []}
     
+    # The data requires some processing to account for bad data and also to fill in missing dates with zeros.
+    # A random color is also supplied since the Highcharts runs out of colors.
     opts['branches'].each do |branch|
       dataset = {unit: 'Patrons', color: "##{SecureRandom.hex(3)}", name: branch, data: [], maxdata: [], type: 'line', maxtype: 'scatter', valueDecimals: 2}
       dates.each do |date| 
-        value = (results[[date, branch]].nil? ? 0 : results[[date, branch]]).to_f
-        max_value = (max_results[[date, branch]].nil? ? 0 : max_results[[date, branch]]).to_i
+        value = (mean_results [[date, branch]].nil? ? 0 : mean_results [[date, branch]]).to_f
+        max_value = (max_results [[date, branch]].nil? ? 0 : max_results [[date, branch]]).to_i
         
         if value > 300
           counts = Interaction.where(page: 'Patron Count', branch: branch, count_date: date).collect { |i| i.optional_text.to_f }.delete_if { |x| x > 300 }
@@ -50,6 +72,41 @@ class Interaction < ActiveRecord::Base
     end
     
     data
+  end
+  
+  def self.patron_count_by_year(opts = {})
+    # Get the branches that will be itereated over
+    branches = Interaction.where(page: 'Patron Count').select(:branch).distinct.collect { |b| b.branch }
+  
+    opts = {
+      'branches'=> branches, 
+    }.merge(opts).with_indifferent_access
+    
+    query = Interaction.select('MAX(id)').
+      where(page: 'Patron Count').
+      where("optional_text <> ''").
+      group(:year).
+      group(:branch).
+      order('branch, year')
+      
+    mean_results = query.average('CAST(optional_text as integer)')
+    max_results = query.maximum('CAST(optional_text as integer)')
+    
+    year_keys = mean_results.keys.collect { |k| k.first }
+      
+    data = {years:  (year_keys.min..year_keys.max).to_a, datasets: []}
+    
+    opts['branches'].each do |branch|
+      dataset = {unit: 'Patrons', color: "##{SecureRandom.hex(3)}", name: branch, mean_data: [], max_data: [], type: 'line', valueDecimals: 2}
+      data[:years].each do |year|
+        dataset[:mean_data] << (mean_results[[year, branch]].nil? ? 0 : mean_results [[year, branch]]).to_f
+        dataset[:max_data] << (max_results[[year, branch]].nil? ? 0 : max_results [[year, branch]]).to_i
+      end
+      data[:datasets] << dataset
+    end  
+    
+    return data
+      
   end
   
   def branch_to_key branch

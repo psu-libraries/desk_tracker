@@ -1,4 +1,5 @@
-ActiveAdmin.register_page "Patron Counts" do
+ActiveAdmin.register_page "Full Time Series" do
+  menu parent: 'Patron Counts'
   content do
     render 'admin/data/patron_count_charts', context: self, locals: {opts: @arbre_context.assigns[:opts]}
   end #content
@@ -6,9 +7,8 @@ ActiveAdmin.register_page "Patron Counts" do
   
   sidebar 'Patron Count Timeseries' do
     para "Patron counts for each branch over time are represented in each graph."
+    
     para "The solid line represents the average patron count, the dots represent the maximum count for the day. "
-    para "The charts are synchronized, mousing over one chart will produce produce a cursor line "+
-          "on all charts. The number in the top right corner is the average patron count."
           
     para "You can hide a given series (i.e. Research Hub: Maximum Patron Count) by clicking on its legend item."
     
@@ -16,7 +16,7 @@ ActiveAdmin.register_page "Patron Counts" do
          "on the top right of a char."
   end
   
-  sidebar :filters, partial: 'admin/data/patron_count_filter', context: self
+  sidebar :filters, partial: 'admin/data/patron_count_filters', context: self
   
   controller do
     def index

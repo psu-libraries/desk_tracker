@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151022192624) do
+ActiveRecord::Schema.define(version: 20151104212432) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -79,6 +79,12 @@ ActiveRecord::Schema.define(version: 20151022192624) do
     t.datetime "created_at",         null: false
     t.datetime "updated_at",         null: false
     t.date     "count_date"
+    t.integer  "day_of_week"
+    t.integer  "day_of_month"
+    t.integer  "day_of_year"
+    t.integer  "hour_of_day"
+    t.integer  "year"
+    t.integer  "month"
   end
 
   add_index "interactions", ["count_date"], name: "index_interactions_on_count_date", using: :btree
