@@ -1,6 +1,6 @@
 class Api::V1::InteractionsController < ApplicationController
   
-  before_action :process_date_params, only: [:patron_count_timeseries]
+  before_action :process_date_params, only: [:patron_count_timeseries, :mean_daily_use_heatmap]
   
   ##
   # Skip unneeded validations used for web interface.
@@ -13,6 +13,10 @@ class Api::V1::InteractionsController < ApplicationController
   
   def patron_count_by_year
     render json: Interaction.patron_count_by_year(params)
+  end
+  
+  def mean_daily_use_heatmap
+    render json: Interaction.mean_daily_use_heatmap(params)
   end
   
   private

@@ -91,7 +91,8 @@ $(function () {
                     yAxis: {
                         title: {
                             text: null
-                        }
+                        },
+						min: 0
                     },
                     tooltip: {
                         // positioner: function () {
@@ -126,49 +127,53 @@ $(function () {
  //                        },
  //                        valueDecimals: dataset.valueDecimals
                     },
-                    series: [{
+                    series: [
+						{
+							pointInterval: 24 * 3600 * 1000,
+							pointStart: Date.UTC(dataset.start_date[0], dataset.start_date[1], dataset.start_date[2]),
+	                        data: dataset.maxdata,
+	                        // name: dataset.name,
+							name: 'Maximum ',
+	                        type: 'line',
+							unit: 'Patrons',
+							color: dataset.color,
+	                		lineWidth : 0,
+							marker: {
+								enabled: true,
+								symbol: 'circle',
+								radius: 2,
+							},
+	                        tooltip: {
+	                            valueSuffix: ' ' + dataset.unit
+	                        },
+							states: {
+								hover: {
+									enabled: true,
+									lineWidth: 0,
+									marker: {
+										lineWidth: 0,
+										radius: 3
+									},
+									halo: {
+										size: 0
+									}
+								}
+							}
+						},
+						{
 						pointInterval: 24 * 3600 * 1000,
 						pointStart: Date.UTC(dataset.start_date[0], dataset.start_date[1], dataset.start_date[2]),
                         data: dataset.data,
-                        // name: dataset.name,
 						name: 'Mean',
                         type: dataset.type,
 						unit: 'Patrons',
 						color: dataset.color,
                         fillOpacity: 0.3,
                         tooltip: {
-                            valueSuffix: ' ' + dataset.unit
+                            valueSuffix: ' ' + dataset.unit,
+							valueDecimals: 2
                         }
-                    },
-					{
-						pointInterval: 24 * 3600 * 1000,
-						pointStart: Date.UTC(dataset.start_date[0], dataset.start_date[1], dataset.start_date[2]),
-                        data: dataset.maxdata,
-                        // name: dataset.name,
-						name: 'Maximum ',
-                        type: 'line',
-						unit: 'Patrons',
-						color: dataset.color,
-                		lineWidth : 0,
-						marker: {
-							enabled: true,
-							symbol: 'circle',
-							radius: 2,
-						},
-                        tooltip: {
-                            valueSuffix: ' ' + dataset.unit
-                        },
-						states: {
-							hover: {
-								enabled: true,
-								lineWidth: 0,
-								marker: {
-									lineWidth: 0,
-									radius: 3
-								}
-							}
-						}
-					}]
+                    }]
                 });
         });
     });

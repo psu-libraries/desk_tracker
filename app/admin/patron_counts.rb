@@ -1,8 +1,6 @@
 ActiveAdmin.register_page "Time Series" do
   
-  menu priority: 1
-  
-  menu parent: 'Patron Counts'
+  menu parent: 'Patron Counts', priority: 1
   
   content do
     within @head do

@@ -1,6 +1,6 @@
 ActiveAdmin.register_page "Count By Year" do
   
-  menu parent: 'Patron Counts'
+  menu parent: 'Patron Counts', priority: 2
   
   content do
 

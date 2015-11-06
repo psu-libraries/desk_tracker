@@ -1,0 +1,10 @@
+<% context.instance_eval do
+	panel 'Daily Use By Hour And Day' do
+		div id: 'ajax_data', 'data-ajax' => opts.to_json
+		div id: 'loading' do
+			img id: "ajaxSpinnerImage", src: image_url("ajax-loader.gif"), title: "working", class: 'centered'
+		end
+		div id: "daily_use_heatmap"
+	end
+
+end %>

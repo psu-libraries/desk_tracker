@@ -53,7 +53,7 @@ class Interaction < ActiveRecord::Base
     
     # The data requires some processing to account for bad data and also to fill in missing dates with zeros.
     # A random color is also supplied since the Highcharts runs out of colors.
-    opts['branches'].each do |branch|
+    opts['branches'].sort.each do |branch|
       dataset = {unit: 'Patrons', color: "##{SecureRandom.hex(3)}", name: branch, data: [], maxdata: [], type: 'line', maxtype: 'scatter', valueDecimals: 2}
       dates.each do |date| 
         value = (mean_results [[date, branch]].nil? ? 0 : mean_results [[date, branch]]).to_f
@@ -96,7 +96,7 @@ class Interaction < ActiveRecord::Base
       
     data = {years:  (year_keys.min..year_keys.max).to_a, start: year_keys.min, datasets: []}
     
-    opts['branches'].each do |branch|
+    opts['branches'].sort.each do |branch|
       dataset = {unit: 'Patrons', color: "##{SecureRandom.hex(3)}", name: branch, mean_data: [], max_data: [], type: 'line', valueDecimals: 2}
       data[:years].each do |year|
         dataset[:mean_data] << (mean_results[[year, branch]].nil? ? 0 : mean_results [[year, branch]]).to_f
@@ -106,6 +106,58 @@ class Interaction < ActiveRecord::Base
     end  
     
     return data
+      
+  end
+  
+  def self.mean_daily_use_heatmap(opts = {})
+    # Get the branches that will be itereated over
+    branches = Interaction.where(page: 'Patron Count').select(:branch).distinct.collect { |b| b.branch }
+  
+    opts = {
+      'branches'=> branches, 
+    }.merge(opts).with_indifferent_access
+    
+    # visits = Analyzable::Visit.where("avatar_name like ?", "%#{opts[:avatar_name]}%").where(
+ #        rezzable_id: rezzable_ids, rezzable_type: 'Rezzable::TrafficCop', created_at: (opts[:start_date]..opts[:end_date])
+ #        )
+ #        heatmap = Array.new(24) { |y| Array.new(7) { |x| [x, y, 0] } }
+ #        visits.each { |v| heatmap[v.departed_at.hour][v.departed_at.wday][2] += 1 }
+ #        heatmap.flatten(1)
+    mean_counts = Interaction.select('MAX(id)').
+      where(page: 'Patron Count').
+      where("optional_text <> ''").
+      where(count_date: (opts['start_date']..opts['end_date'])).
+      group(:branch, :day_of_week, :hour_of_day).
+      average('CAST(optional_text as integer)')
+      
+    max_counts = Interaction.select('MAX(id)').
+      where(page: 'Patron Count').
+      where("optional_text <> ''").
+      where(count_date: (opts['start_date']..opts['end_date'])).
+      group(:branch, :day_of_week, :hour_of_day).
+      maximum('CAST(optional_text as integer)')
+      
+    data = {datasets: []}
+    
+    puts mean_counts [['Arts & Humanities', 6, 23]].to_f
+      
+    opts[:branches].each do |branch|
+
+      dataset = {unit: 'Patrons', color: "##{SecureRandom.hex(3)}", name: branch, mean_data: Array.new(24) { |y| Array.new(7) { |x| [x, y, 0] } }, max_data: Array.new(24) { |y| Array.new(7) { |x| [x, y, 0] } }, valueDecimals: 2}
+      
+      (0..6).each do |day|
+        (0..23).each do |hour|
+          dataset[:mean_data][hour][day][2] = mean_counts [[branch, day, hour]].to_f
+          dataset[:max_data][hour][day][2] = max_counts [[branch, day, hour]].to_i
+        end
+      end
+      
+      data[:datasets] << dataset
+    end
+    
+    return data
+    
+    
       
   end
   

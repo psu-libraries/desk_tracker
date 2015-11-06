@@ -5,7 +5,7 @@
 			<label>Branch</label>
 		</legend>
 
-	    <% @branches.each do |branch| %>
+	    <% @branches.sort.each do |branch| %>
 		    <% check = false %>
 			<% check = params[:branches].include?(branch) if params[:branches] && !params[:branches].empty? %>
 			    <%= label_tag "branches_#{branch.downcase}" do %>
