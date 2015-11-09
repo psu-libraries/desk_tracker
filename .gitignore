@@ -15,4 +15,4 @@
 /log/*
 !/log/.keep
 /tmp
-/public/data_files
+/public/data_files/*.*
