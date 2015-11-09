@@ -1,0 +1,11 @@
+
+<div class='filter_form_field filter_date_range'>
+	<label class='label'>Date Recorded</label>
+    <% start_date = params[:start_date].nil? ? Interaction.order('count_date asc').first.count_date.strftime('%d-%m-%Y') : params[:start_date] %>
+    <%= text_field_tag 'start_date', params[:start_date], value: start_date, class: 'datepicker hasDatePicker', size: 12, maxlength: 10 %>
+	
+	<span class='seperator'>-</span>
+	
+	<% end_date = params[:end_date].nil? ? Date.today.strftime('%d-%m-%Y') : params[:end_date] %>
+    <%= text_field_tag 'end_date', params[:end_date], value: end_date, class: 'datepicker hasDatePicker', size: 12, maxlength: 10 %>
+</div>

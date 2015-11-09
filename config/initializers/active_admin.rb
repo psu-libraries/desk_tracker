@@ -189,13 +189,14 @@ ActiveAdmin.setup do |config|
   #
   # You can provide an options hash for more control, which is passed along to stylesheet_link_tag():
   #   config.register_stylesheet 'my_print_stylesheet.css', media: :print
+  config.register_stylesheet 'custom.css'
   #
   # To load a javascript file:
     #   config.register_javascript 'my_javascript.js'
     config.register_javascript 'highcharts.js'
     config.register_javascript 'highcharts/modules/heatmap.js'
     config.register_javascript 'highcharts/highcharts-more.js'
-    # config.register_javascript 'patron_counts.js'
+    config.register_javascript 'highcharts/modules/exporting.js'
 
   # == CSV options
   #

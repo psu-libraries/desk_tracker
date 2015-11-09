@@ -1,0 +1,14 @@
+
+<div id='patron_count_filter' class='panel_contents'>
+	<%= form_tag request.path, method: :get, class: 'filter_form' do %>
+	    
+		<%= render 'admin/data/filters/branch_filter', locals: {branches: @branches, params: params} %>
+	    
+		<%= render 'admin/data/filters/date_range_filter', locals: {branches: @branches, params: params} %>
+			
+		<div class='buttons'>
+		    <%= submit_tag 'Filter' %>
+			<%= link_to 'Clear Filters', request.path, class: 'clear_filters_btn' %>
+	    </div>
+	<% end %>
+</div>

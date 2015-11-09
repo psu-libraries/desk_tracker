@@ -1,0 +1,17 @@
+  
+<div class='filter_form_field filter_check_boxes'>
+	<fieldset class="choices">	    
+		<legend class='label'>
+			<label>Branch</label>
+		</legend>
+
+	    <% @branches.sort.each do |branch| %>
+		    <% check = false %>
+			<% check = params[:branches].include?(branch) if params[:branches] && !params[:branches].empty? %>
+			    <%= label_tag "branches_#{branch.downcase}" do %>
+				    <%= check_box_tag "branches[]", branch, check, {id: "branches_#{branch.downcase}"} %>
+					<%= " - #{truncate(branch, length: 32, separator: ' ')}".html_safe %>
+				<% end %>
+		<% end %>
+	</fieldset>
+</div>

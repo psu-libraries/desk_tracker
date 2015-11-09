@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151006161205) do
+ActiveRecord::Schema.define(version: 20151104212432) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -34,11 +34,12 @@ ActiveRecord::Schema.define(version: 20151006161205) do
   create_table "csv_imports", force: :cascade do |t|
     t.integer  "file_size"
     t.integer  "row_count"
-    t.string   "file_name",                          null: false
-    t.integer  "progress",   default: 0
-    t.datetime "created_at",                         null: false
-    t.datetime "updated_at",                         null: false
-    t.string   "stage",      default: "initialized"
+    t.string   "file_name",                            null: false
+    t.integer  "progress",     default: 0
+    t.datetime "created_at",                           null: false
+    t.datetime "updated_at",                           null: false
+    t.string   "stage",        default: "initialized"
+    t.string   "csv_file_uid"
   end
 
   create_table "delayed_jobs", force: :cascade do |t|
@@ -78,6 +79,12 @@ ActiveRecord::Schema.define(version: 20151006161205) do
     t.datetime "created_at",         null: false
     t.datetime "updated_at",         null: false
     t.date     "count_date"
+    t.integer  "day_of_week"
+    t.integer  "day_of_month"
+    t.integer  "day_of_year"
+    t.integer  "hour_of_day"
+    t.integer  "year"
+    t.integer  "month"
   end
 
   add_index "interactions", ["count_date"], name: "index_interactions_on_count_date", using: :btree
