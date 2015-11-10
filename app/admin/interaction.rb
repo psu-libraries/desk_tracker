@@ -43,7 +43,7 @@ ActiveAdmin.register Interaction do
     Dir.mkdir directory unless File.directory? directory
     
     path = File.join(directory, params[:file].original_filename)
-    File.open(path, 'wb') { |f| f.write(params[:file].read) }
+    File.open(path, 'wb') { |f| f.write(params[:upload][:file].read) }
     
     import = CSVImport.create(file_name: path)
     
