@@ -12,3 +12,4 @@ Rails.application.config.assets.version = '1.0'
 Rails.application.config.assets.precompile += %w( patron_counts.js )
 Rails.application.config.assets.precompile += %w( patron_counts_by_year.js )
 Rails.application.config.assets.precompile += %w( daily_use_heatmap.js )
+Rails.application.config.assets.precompile += %w( reference_timeseries.js )

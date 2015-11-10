@@ -189,7 +189,7 @@ ActiveAdmin.setup do |config|
   #
   # You can provide an options hash for more control, which is passed along to stylesheet_link_tag():
   #   config.register_stylesheet 'my_print_stylesheet.css', media: :print
-  config.register_stylesheet 'custom.css'
+  # config.register_stylesheet 'custom.css'
   #
   # To load a javascript file:
     #   config.register_javascript 'my_javascript.js'
@@ -221,11 +221,16 @@ ActiveAdmin.setup do |config|
   #
   # If you wanted to add a static menu item to the default menu provided:
   #
-  #   config.namespace :admin do |admin|
-  #     admin.build_menu :default do |menu|
-  #       menu.add label: "My Great Website", url: "http://www.mygreatwebsite.com", html_options: { target: :blank }
-  #     end
-  #   end
+    config.namespace :admin do |admin|
+      admin.build_menu :utility_navigation do |menu|
+        admin.add_current_user_to_menu  menu
+        menu.add label: 'Queued Imports',
+                 url: '/delayed_job',
+                 html_options: {target: :blank},
+                 if: proc{ current_user.can_be_admin? }
+        admin.add_logout_button_to_menu menu
+      end
+    end
 
   # == Download Links
   #

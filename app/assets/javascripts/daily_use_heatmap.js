@@ -9,62 +9,80 @@ jQuery.ajaxSetup({
 });
 
 $(function () {
-    $.getJSON("/api/interactions/patron_counts_by_year", $('#ajax_data').data('ajax'), function (activity) {
+    $.getJSON("/api/interactions/daily_use_heatmap", $('#ajax_data').data('ajax'), function (activity) {
         $.each(activity.datasets, function (i, dataset) {
 
             $('<div class="chart">')
-                .appendTo('div#count_by_year')
+                .appendTo('div#daily_use_heatmap')
                 .highcharts({
                     chart: {
-                        marginLeft: 40, // Keep all charts left aligned
-                        spacingTop: 20,
-                        spacingBottom: 20
+                        type: 'heatmap',
+                        height: 800
+                        //marginLeft: , // Keep all charts left aligned
+                        //spacingTop: 20,
+                        //spacingBottom: 20
                     },
                     title: {
                         text: dataset.name,
-                        align: 'left',
-                        margin: 0,
-                        x: 30
                     },
                     credits: {
                         enabled: false
                     },
-                    legend: {
-                        enabled: true
-                    },
                     xAxis: {
-						crosshairs: true,
-						categories: activity.years
+                        categories: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
                     },
+
                     yAxis: {
-                        title: {
-                            text: null
-                        },
-						min: 0
+                        categories: [
+                            "1am", "2am", "3am", "4am", "5am", "6am", "7am", "8am ", "9am", "10am", "11am", "Noon",
+                            "1pm", "2pm", "3pm", "4pm", "5pm", "6pm", "7pm", "8pm ", "9pm", "10pm", "11pm", "Midnight"],
+                        title: null
                     },
+                    colorAxis: {
+                        min: 0,
+                        minColor: '#FFFFFF',
+                        maxColor: dataset.color
+                    },
+
+                    legend: {
+                        align: 'right',
+                        layout: 'vertical',
+                        margin: 10,
+                        verticalAlign: 'top',
+                        y: 65,
+                        symbolHeight: 650
+                    },
+
                     tooltip: {
-						shared: true
+                        formatter: function () {
+                            return 'On <b>' + this.series.xAxis.categories[this.point.x] + '</b> there were on average <br><b>' +
+                                parseFloat(this.point.value).toFixed(2) + '</b> patrons <br> at <b>' + this.series.yAxis.categories[this.point.y] +
+                                '</b><br/> at the <b>'+dataset.name+'</b> library.';
+                        },
+                        valueDecimals: 2
                     },
+
                     series: [
-					{
-                        data: dataset.max_data,
-						name: 'Maximum ',
-						unit: 'Patrons',
-						dashStyle: 'longdashdotdot',
-						color: dataset.color,
-                        tooltip: {
-                            valueSuffix: ' ' + dataset.unit
-                        }
-					},
+					//{
+                     //   data: dataset.max_data,
+					//	name: 'Maximum ',
+					//	unit: 'Patrons',
+					//	dashStyle: 'longdashdotdot',
+					//	color: dataset.color,
+                     //   tooltip: {
+                     //       valueSuffix: ' ' + dataset.unit
+                     //   }
+					//},
 					{
                         data: dataset.mean_data,
 						name: 'Mean',
-						unit: 'Patrons',
-						color: dataset.color,
-                        fillOpacity: 0.3,
-                        tooltip: {
-                            valueSuffix: ' ' + dataset.unit,
-							valueDecimals: 2
+                        borderWidth: 0,
+                        dataLabels: {
+                            enabled: false,
+                            color: 'black',
+                            style: {
+                                textShadow: 'none'
+                            }
                         }
                     }]
                 });

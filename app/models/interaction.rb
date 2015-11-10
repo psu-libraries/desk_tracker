@@ -109,7 +109,7 @@ class Interaction < ActiveRecord::Base
       
   end
   
-  def self.mean_daily_use_heatmap(opts = {})
+  def self.daily_use_heatmap(opts = {})
     # Get the branches that will be itereated over
     branches = Interaction.where(page: 'Patron Count').select(:branch).distinct.collect { |b| b.branch }
   
@@ -126,7 +126,7 @@ class Interaction < ActiveRecord::Base
     mean_counts = Interaction.select('MAX(id)').
       where(page: 'Patron Count').
       where("optional_text <> ''").
-      where(count_date: (opts['start_date']..opts['end_date'])).
+      # where(count_date: (opts['start_date']..opts['end_date'])).
       group(:branch, :day_of_week, :hour_of_day).
       average('CAST(optional_text as integer)')
       
@@ -145,12 +145,15 @@ class Interaction < ActiveRecord::Base
 
       dataset = {unit: 'Patrons', color: "##{SecureRandom.hex(3)}", name: branch, mean_data: Array.new(24) { |y| Array.new(7) { |x| [x, y, 0] } }, max_data: Array.new(24) { |y| Array.new(7) { |x| [x, y, 0] } }, valueDecimals: 2}
       
-      (0..6).each do |day|
-        (0..23).each do |hour|
+      (0..23).each do |hour|
+        (0..6).each do |day|
           dataset[:mean_data][hour][day][2] = mean_counts [[branch, day, hour]].to_f
           dataset[:max_data][hour][day][2] = max_counts [[branch, day, hour]].to_i
         end
       end
+
+      dataset[:mean_data] = dataset[:mean_data].flatten(1)
+      dataset[:max_data] = dataset[:max_data].flatten(1)
       
       data[:datasets] << dataset
     end
@@ -159,6 +162,54 @@ class Interaction < ActiveRecord::Base
     
     
       
+  end
+
+  def self.reference_timeseries(opts = {})
+
+    # Get the branches that will be itereated over
+    branches = Interaction.where(page: 'Patron Count').select(:branch).distinct.collect { |b| b.branch }
+
+    opts = {
+        'branches'=> branches,
+        'start_date' => Interaction.order('count_date asc').first.count_date,
+        'end_date' => DateTime.now
+    }.merge(opts).with_indifferent_access
+
+    # Query for the average patron counts
+    results  = Interaction.where(page: 'Reference').
+        where("optional_text <> ''").
+        where(count_date: (opts['start_date']..opts['end_date'])).
+        order('count_date asc').
+        group(:count_date).
+        group(:branch).
+        count
+
+    # # Query to get the max patron counts
+    # max_results  = Interaction.where(page: 'Patron Count').
+    #     where("optional_text <> ''").
+    #     where(count_date: (opts['start_date']..opts['end_date'])).
+    #     select('max(id), max(cast(optional_text as float))').
+    #     order('count_date asc').
+    #     group(:count_date).
+    #     group(:branch).
+    #     maximum('cast(optional_text as integer)')
+
+    dates = (results.keys.first.first..results.keys.last.first)
+    data = {datasets: []}
+
+    # The data requires some processing to account for bad data and also to fill in missing dates with zeros.
+    # A random color is also supplied since the Highcharts runs out of colors.
+    opts['branches'].sort.each do |branch|
+      dataset = {unit: 'Questions', color: "##{SecureRandom.hex(3)}", name: branch, data: [], type: 'line', valueDecimals: 2}
+      dates.each do |date|
+        value = (results [[date, branch]].nil? ? 0 : results [[date, branch]]).to_f
+        dataset[:data] << value
+      end
+      dataset[:start_date] = [dates.first.year, dates.first.month, dates.first.day]
+      data[:datasets] << dataset
+    end
+
+    data
   end
   
   def branch_to_key branch

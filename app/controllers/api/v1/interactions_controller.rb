@@ -15,8 +15,12 @@ class Api::V1::InteractionsController < ApplicationController
     render json: Interaction.patron_count_by_year(params)
   end
   
-  def mean_daily_use_heatmap
-    render json: Interaction.mean_daily_use_heatmap(params)
+  def daily_use_heatmap
+    render json: Interaction.daily_use_heatmap(params)
+  end
+
+  def reference_timeseries
+    render json: Interaction.reference_timeseries(params)
   end
   
   private
