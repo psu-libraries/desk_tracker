@@ -15,6 +15,10 @@ class Api::V1::InteractionsController < ApplicationController
     render json: Interaction.patron_count_by_year(params)
   end
   
+  def patron_count_by_month
+    render json: Interaction.patron_count_by_month(params)
+  end
+  
   def daily_use_heatmap
     render json: Interaction.daily_use_heatmap(params)
   end

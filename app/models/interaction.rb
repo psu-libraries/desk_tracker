@@ -109,6 +109,73 @@ class Interaction < ActiveRecord::Base
       
   end
   
+  def self.patron_count_by_month(opts = {})   
+    # Get the branches that will be itereated over
+    branches = Interaction.where(page: 'Patron Count').select(:branch).distinct.collect { |b| b.branch }
+  
+    opts = {
+      'branches'=> branches, 
+      'start_date' => Interaction.order('count_date asc').first.count_date,
+      'end_date' => DateTime.now
+    }.merge(opts).with_indifferent_access
+    
+    # Query for the average patron counts
+    mean_results  = Interaction.where(page: 'Patron Count').
+      where("optional_text <> ''").
+      # where(count_date: (opts['start_date']..opts['end_date'])).
+      select('max(id)').
+      order('year asc, month asc').
+      group(:year).
+      group(:month).
+      group(:branch).
+      average('cast(optional_text as float)')
+    
+    # Query to get the max patron counts
+    max_results  = Interaction.where(page: 'Patron Count').
+      where("optional_text <> ''").
+      # where(count_date: (opts['start_date']..opts['end_date'])).
+      select('max(id), max(cast(optional_text as float))').
+      order('year asc, month asc').
+      group(:year).
+      group(:month).
+      group(:branch).
+      maximum('cast(optional_text as integer)')
+      
+    months = (1..12)
+    years = (mean_results.keys.first.first..mean_results.keys.last.first)
+    
+    date_data = []
+    
+    years.each do |y|
+      months.each do |m|
+        date_data << {year: y, month: m, label: Date.new(y, m).strftime("%b %Y")}
+      end
+    end
+    data = {datasets: [], x_axis: date_data.collect { |d| d[:label]}}
+    
+    
+    
+    # The data requires some processing to account for bad data and also to fill in missing dates with zeros.
+    # A random color is also supplied since the Highcharts runs out of colors.
+    opts['branches'].sort.each do |branch|
+      dataset = {unit: 'Patrons', color: "##{SecureRandom.hex(3)}", name: branch, data: [], max_data: [], type: 'line', maxtype: 'scatter', valueDecimals: 2}
+      
+      years.each do |year|
+        months.each do |month|
+          mean_value = (mean_results [[year, month, branch]].nil? ? 0 : mean_results [[year, month, branch]]).to_f
+          max_value = (max_results [[year, month, branch]].nil? ? 0 : max_results [[year, month, branch]]).to_i
+          
+          dataset[:data] << mean_value
+          dataset[:max_data] << max_value
+        end
+      end
+      
+      data[:datasets] << dataset
+    end
+    
+    data
+  end
+  
   def self.daily_use_heatmap(opts = {})
     # Get the branches that will be itereated over
     branches = Interaction.where(page: 'Patron Count').select(:branch).distinct.collect { |b| b.branch }

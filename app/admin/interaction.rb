@@ -40,6 +40,7 @@ ActiveAdmin.register Interaction do
  
     directory = 'public/data_files'
     
+    
     Dir.mkdir directory unless File.directory? directory
     
     path = File.join(directory, params[:file].original_filename)
