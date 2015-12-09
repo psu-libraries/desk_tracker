@@ -27,3 +27,16 @@ want to replace this with something more suited to your institution, such as an 
 This application should install like a rails app. Create a copy of the codebase, and run ```bundle install```. Update 
 the ```database.yml``` to match your database and credentials. Launch the server and it should be running. You will need to use 
 rails console to create an initial user though.
+
+The CSV upload makes use of the Delayed Job gem. This gem should be fine for this application, but it does hit the database every few seconds. A switch to somethign like Resque might be desired in the future. To start the Delayed Jobs, on the command line
+
+```
+    RAILS_ENV=production script/delayed_job start
+    RAILS_ENV=production script/delayed_job stop
+
+    # Runs two workers in separate processes.
+    RAILS_ENV=production script/delayed_job -n 2 start
+    RAILS_ENV=production script/delayed_job stop
+```
+
+Further documentation can be found at https://github.com/collectiveidea/delayed_job.
