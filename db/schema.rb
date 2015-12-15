@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151104212432) do
+ActiveRecord::Schema.define(version: 20151209184218) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -65,7 +65,7 @@ ActiveRecord::Schema.define(version: 20151104212432) do
 
   create_table "interactions", force: :cascade do |t|
     t.integer  "response_set"
-    t.integer  "response_id",        null: false
+    t.integer  "response_id",                    null: false
     t.integer  "parent_response_id"
     t.datetime "date_time"
     t.string   "page"
@@ -76,8 +76,8 @@ ActiveRecord::Schema.define(version: 20151104212432) do
     t.string   "branch"
     t.string   "desk"
     t.string   "library"
-    t.datetime "created_at",         null: false
-    t.datetime "updated_at",         null: false
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
     t.date     "count_date"
     t.integer  "day_of_week"
     t.integer  "day_of_month"
@@ -85,9 +85,11 @@ ActiveRecord::Schema.define(version: 20151104212432) do
     t.integer  "hour_of_day"
     t.integer  "year"
     t.integer  "month"
+    t.integer  "data_quality",       default: 2
   end
 
   add_index "interactions", ["count_date"], name: "index_interactions_on_count_date", using: :btree
+  add_index "interactions", ["data_quality"], name: "index_interactions_on_data_quality", using: :btree
   add_index "interactions", ["date_time"], name: "index_interactions_on_date_time", using: :btree
   add_index "interactions", ["page"], name: "index_interactions_on_page", using: :btree
   add_index "interactions", ["response_id"], name: "index_interactions_on_response_id", unique: true, using: :btree

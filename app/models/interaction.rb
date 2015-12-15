@@ -1,5 +1,7 @@
 class Interaction < ActiveRecord::Base
   
+  enum data_quality: [:poor, :fair, :good]
+  
   def year
     return self.count_date.strftime('%Y')
   end
@@ -32,6 +34,7 @@ class Interaction < ActiveRecord::Base
     mean_results  = Interaction.where(page: 'Patron Count').
       where("optional_text <> ''").
       where(count_date: (opts['start_date']..opts['end_date'])).
+      where(data_quality: 2).
       select('max(id)').
       order('count_date asc').
       group(:count_date).
@@ -42,6 +45,7 @@ class Interaction < ActiveRecord::Base
     max_results  = Interaction.where(page: 'Patron Count').
       where("optional_text <> ''").
       where(count_date: (opts['start_date']..opts['end_date'])).
+      where(data_quality: 2).
       select('max(id), max(cast(optional_text as float))').
       order('count_date asc').
       group(:count_date).
@@ -74,6 +78,11 @@ class Interaction < ActiveRecord::Base
     data
   end
   
+  ##
+  # Returns patron count timeseries data grouped by year. 
+  #
+  # @param [Hash] opts 
+  # @option opts [Array<String>] An array of the branches to include.
   def self.patron_count_by_year(opts = {})
     # Get the branches that will be itereated over
     branches = Interaction.where(page: 'Patron Count').select(:branch).distinct.collect { |b| b.branch }
@@ -85,6 +94,7 @@ class Interaction < ActiveRecord::Base
     query = Interaction.select('MAX(id)').
       where(page: 'Patron Count').
       where("optional_text <> ''").
+      where(data_quality: 2).
       group(:year).
       group(:branch).
       order('branch, year')
@@ -109,6 +119,11 @@ class Interaction < ActiveRecord::Base
       
   end
   
+  ##
+  # Returns patron count timeseries data grouped by month. 
+  #
+  # @param [Hash] opts 
+  # @option opts [Array<String>] An array of the branches to include.
   def self.patron_count_by_month(opts = {})   
     # Get the branches that will be itereated over
     branches = Interaction.where(page: 'Patron Count').select(:branch).distinct.collect { |b| b.branch }
@@ -122,7 +137,7 @@ class Interaction < ActiveRecord::Base
     # Query for the average patron counts
     mean_results  = Interaction.where(page: 'Patron Count').
       where("optional_text <> ''").
-      # where(count_date: (opts['start_date']..opts['end_date'])).
+      where(data_quality: 2).
       select('max(id)').
       order('year asc, month asc').
       group(:year).
@@ -133,7 +148,7 @@ class Interaction < ActiveRecord::Base
     # Query to get the max patron counts
     max_results  = Interaction.where(page: 'Patron Count').
       where("optional_text <> ''").
-      # where(count_date: (opts['start_date']..opts['end_date'])).
+      where(data_quality: 2).
       select('max(id), max(cast(optional_text as float))').
       order('year asc, month asc').
       group(:year).
@@ -176,6 +191,13 @@ class Interaction < ActiveRecord::Base
     data
   end
   
+  ##
+  # Returns data for average patron count and max patron count heatmaps for daily use patterns.
+  #
+  # @param [Hash] opts
+  # @option branches [Array<String>] branches to include in the data
+  # @option start_date[DateTime] earliest date to include in the data
+  # @option end_date[DateTime] latest date to include in the data
   def self.daily_use_heatmap(opts = {})
     # Get the branches that will be itereated over
     branches = Interaction.where(page: 'Patron Count').select(:branch).distinct.collect { |b| b.branch }
@@ -184,16 +206,11 @@ class Interaction < ActiveRecord::Base
       'branches'=> branches, 
     }.merge(opts).with_indifferent_access
     
-    # visits = Analyzable::Visit.where("avatar_name like ?", "%#{opts[:avatar_name]}%").where(
- #        rezzable_id: rezzable_ids, rezzable_type: 'Rezzable::TrafficCop', created_at: (opts[:start_date]..opts[:end_date])
- #        )
- #        heatmap = Array.new(24) { |y| Array.new(7) { |x| [x, y, 0] } }
- #        visits.each { |v| heatmap[v.departed_at.hour][v.departed_at.wday][2] += 1 }
- #        heatmap.flatten(1)
     mean_counts = Interaction.select('MAX(id)').
       where(page: 'Patron Count').
       where("optional_text <> ''").
-      # where(count_date: (opts['start_date']..opts['end_date'])).
+      where(data_quality: 2).
+      where(count_date: (opts['start_date']..opts['end_date'])).
       group(:branch, :day_of_week, :hour_of_day).
       average('CAST(optional_text as integer)')
       
@@ -244,7 +261,8 @@ class Interaction < ActiveRecord::Base
 
     # Query for the average patron counts
     results  = Interaction.where(page: 'Reference').
-        where("optional_text <> ''").
+        where("optional_text <> ''").      
+        where(data_quality: 2).
         where(count_date: (opts['start_date']..opts['end_date'])).
         order('count_date asc').
         group(:count_date).

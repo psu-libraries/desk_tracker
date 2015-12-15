@@ -2,6 +2,7 @@
 <div id='patron_count_filter' class='panel_contents'>
 	<%= form_tag request.path, method: :get, class: 'filter_form' do %>
 	    
+		<!-- Rather than put all the filters here, each filter is added separately to promote reuse of code -->
 		<%= render 'admin/data/filters/branch_filter', locals: {branches: @branches, params: params} %>
 		<%= render 'admin/data/filters/date_range_filter', locals: {branches: @branches, params: params} %>
 		

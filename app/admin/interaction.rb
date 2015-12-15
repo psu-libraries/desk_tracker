@@ -12,6 +12,7 @@ ActiveAdmin.register Interaction do
     column :optional_text
     column :user
     column :count_date
+    column :data_quality
     actions
   end
   
@@ -21,6 +22,7 @@ ActiveAdmin.register Interaction do
   filter :page, as: :check_boxes, collection: proc { Interaction.select('page').distinct.collect { |b| b.page} }
   filter :question
   filter :user
+  filter :data_quality, as: :check_boxes, collection: Interaction.data_qualities
  
   
   sidebar 'Import Data', priority: 0 do

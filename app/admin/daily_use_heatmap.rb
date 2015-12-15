@@ -1,11 +1,15 @@
+# Heatmap graphs showing daily use patterns.
+
 ActiveAdmin.register_page "Daily Use Heatmap" do
   
   menu parent: 'Patron Counts', priority: 3
   
   content do
+    # Load the javascript here, otherwise the ajax calls are performed on every page.
     within @head do
           script :src => javascript_path('daily_use_heatmap.js'), :type => "text/javascript"
     end
+    
     render 'admin/data/daily_use_heatmaps', context: self, locals: {opts: @arbre_context.assigns[:opts]}
   end #content
   
