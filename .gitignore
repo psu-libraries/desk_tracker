@@ -12,9 +12,38 @@
 /db/*.sqlite3-journal
 
 # Ignore all logfiles and tempfiles.
-/log/*
-!/log/.keep
+/log/*.log
 /tmp
+/public
+
+Procfile
+config/puma.rb
+
+/public/system
+/public/uploads
+/coverage
+rerun.txt
+.rspec
+capybara-*.html
+.DS_Store
+.rbenv-vars
+.rbenv-version
+.bundle
+db/*.sqlite3
+log/*.log
+log/*.pid
+.sass-cache/
+tmp/**/*
+.rvmrc*
+.DS_Store
+db-dumps
+**/.DS_Store
+nbproject/**/*
+.yardoc/**/*
+.yardoc
+nbproject
+.idea
+.idea/**/*
+*.swp
 
 *.csv
-
