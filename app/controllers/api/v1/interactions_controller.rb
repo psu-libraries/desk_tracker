@@ -1,6 +1,6 @@
 class Api::V1::InteractionsController < ApplicationController
   
-  before_action :process_date_params, only: [:patron_count_timeseries, :mean_daily_use_heatmap]
+  before_action :process_date_params, only: [:patron_count_timeseries, :daily_use_heatmap]
   
   ##
   # Skip unneeded validations used for web interface.
@@ -20,6 +20,7 @@ class Api::V1::InteractionsController < ApplicationController
   end
   
   def daily_use_heatmap
+    puts "params #{params}"
     render json: Interaction.daily_use_heatmap(params)
   end
 
@@ -35,12 +36,18 @@ class Api::V1::InteractionsController < ApplicationController
   # @todo Consider adding warning messages to alert the user the query has not behaved as normal.  
   def process_date_params
     
+    puts "processing data params"
+    
     # Checks start and end dates. Likewise if there is an error the default
     # is to send the entire timeseries
     begin
+      puts "date time found"
       params[:start_date] = DateTime.parse(params[:start_date]) unless params[:start_date].nil?
       params[:end_date] = DateTime.parse(params[:end_date]) unless params[:end_date].nil?
+      params[:start_date] = Interaction.order('count_date asc').first.count_date if params[:start_date].nil?
+      params[:end_date] = DateTime.now if params[:end_date].nil?
     rescue
+      puts "no date_time found"
       params[:start_date] = Interaction.order('count_date asc').first.count_date
       params[:end_date] = DateTime.now
     end

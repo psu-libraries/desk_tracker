@@ -203,8 +203,10 @@ class Interaction < ActiveRecord::Base
     branches = Interaction.where(page: 'Patron Count').select(:branch).distinct.collect { |b| b.branch }
   
     opts = {
-      'branches'=> branches, 
+      'branches'=> branches,
     }.merge(opts).with_indifferent_access
+    
+    puts "options: #{opts}"
     
     mean_counts = Interaction.select('MAX(id)').
       where(page: 'Patron Count').
@@ -217,6 +219,7 @@ class Interaction < ActiveRecord::Base
     max_counts = Interaction.select('MAX(id)').
       where(page: 'Patron Count').
       where("optional_text <> ''").
+      where(data_quality: 2).
       where(count_date: (opts['start_date']..opts['end_date'])).
       group(:branch, :day_of_week, :hour_of_day).
       maximum('CAST(optional_text as integer)')
