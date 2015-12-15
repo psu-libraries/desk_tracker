@@ -228,7 +228,7 @@ class Interaction < ActiveRecord::Base
     
     puts mean_counts [['Arts & Humanities', 6, 23]].to_f
       
-    opts[:branches].each do |branch|
+    opts[:branches].sort.each do |branch|
 
       dataset = {unit: 'Patrons', color: "##{SecureRandom.hex(3)}", name: branch, mean_data: Array.new(24) { |y| Array.new(7) { |x| [x, y, 0] } }, max_data: Array.new(24) { |y| Array.new(7) { |x| [x, y, 0] } }, valueDecimals: 2}
       
